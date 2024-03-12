@@ -1,12 +1,14 @@
 /data
 /new_data
-efficientnet-b2_weights_tf_dim_ordering_tf_kernels_autoaugment_notop.h5
+efficientnetb2.h5
 model.py
 mertics.py
 tools.yml
 logs/
+model_archives
 files/
 data.py
 *.keras
 *.h5
-.gitignore
+    
+# git push --set-upstream origin master
