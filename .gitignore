@@ -7,3 +7,6 @@ tools.yml
 logs/
 files/
 data.py
+*.keras
+*.h5
+.gitignore
