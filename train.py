@@ -1,12 +1,18 @@
-
 import os
+
 os.environ["TF_CPP_MIN_LOG_LEVEL"] = "2"
 import numpy as np
 import cv2
 from glob import glob
 from sklearn.utils import shuffle
 import tensorflow as tf
-from tensorflow.keras.callbacks import ModelCheckpoint, CSVLogger, ReduceLROnPlateau, EarlyStopping, TensorBoard
+from tensorflow.keras.callbacks import (
+    ModelCheckpoint,
+    CSVLogger,
+    ReduceLROnPlateau,
+    EarlyStopping,
+    TensorBoard,
+)
 from tensorflow.keras.optimizers import Adam
 from tensorflow.keras.metrics import Recall, Precision
 from model import build_unet
@@ -15,35 +21,55 @@ from metrics import dice_loss, dice_coef, iou
 H = 512
 W = 512
 
+
+# def dice_coef(y_true, y_pred, smooth=1):
+#   intersection = tf.reduce_sum(y_true * y_pred)
+#   union = tf.reduce_sum(y_true) + tf.reduce_sum(y_pred)
+#    dice = (2.0 * intersection + smooth) / (union + smooth)
+#    return dice
+
+
+# def iou(y_true, y_pred, smooth=1):
+#    intersection = tf.reduce_sum(y_true * y_pred)
+#    union = tf.reduce_sum(y_true) + tf.reduce_sum(y_pred) - intersection
+#    iou = (intersection + smooth) / (union + smooth)
+#    return iou
+
+
 def create_dir(path):
-    """ Create a directory. """
+    """Create a directory."""
     if not os.path.exists(path):
         os.makedirs(path)
+
 
 def shuffling(x, y):
     x, y = shuffle(x, y, random_state=42)
     return x, y
+
 
 def load_data(path):
     x = sorted(glob(os.path.join(path, "image", "*.jpg")))
     y = sorted(glob(os.path.join(path, "mask", "*.jpg")))
     return x, y
 
+
 def read_image(path):
     path = path.decode()
     x = cv2.imread(path, cv2.IMREAD_COLOR)
-    x = x/255.0
+    x = x / 255.0
     x = x.astype(np.float32)
     return x
+
 
 def read_mask(path):
     path = path.decode()
     x = cv2.imread(path, cv2.IMREAD_GRAYSCALE)
-    x = x/255.0
+    x = x / 255.0
     x = x > 0.5
     x = x.astype(np.float32)
     x = np.expand_dims(x, axis=-1)
     return x
+
 
 def tf_parse(x, y):
     def _parse(x, y):
@@ -56,6 +82,7 @@ def tf_parse(x, y):
     y.set_shape([H, W, 1])
     return x, y
 
+
 def tf_dataset(x, y, batch=8):
     dataset = tf.data.Dataset.from_tensor_slices((x, y))
     dataset = dataset.map(tf_parse)
@@ -65,7 +92,7 @@ def tf_dataset(x, y, batch=8):
 
 
 if __name__ == "__main__":
-    """ Seeding """
+    """Seeding"""
     np.random.seed(42)
     tf.random.set_seed(42)
 
@@ -73,10 +100,10 @@ if __name__ == "__main__":
     create_dir("files")
 
     """ Hyperparameters """
-    batch_size = 2
+    batch_size = 16
     lr = 1e-4
     num_epochs = 5
-    model_path = os.path.join("files", "model.h5")
+    model_path = os.path.join("files", "model.keras")
     csv_path = os.path.join("files", "data.csv")
 
     """ Dataset """
@@ -101,10 +128,12 @@ if __name__ == "__main__":
 
     callbacks = [
         ModelCheckpoint(model_path, verbose=1, save_best_only=True),
-        ReduceLROnPlateau(monitor='val_loss', factor=0.1, patience=10, min_lr=1e-7, verbose=1),
+        ReduceLROnPlateau(
+            monitor="val_loss", factor=0.1, patience=10, min_lr=1e-7, verbose=1
+        ),
         CSVLogger(csv_path),
         TensorBoard(),
-        EarlyStopping(monitor='val_loss', patience=50, restore_best_weights=False),
+        EarlyStopping(monitor="val_loss", patience=50, restore_best_weights=False),
     ]
 
     model.fit(
@@ -112,5 +141,5 @@ if __name__ == "__main__":
         epochs=num_epochs,
         validation_data=valid_dataset,
         callbacks=callbacks,
-        shuffle=False
+        shuffle=False,
     )

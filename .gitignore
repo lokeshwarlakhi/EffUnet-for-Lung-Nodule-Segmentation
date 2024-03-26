@@ -1,14 +1,13 @@
+logs/
 /data
+files/
 /new_data
-efficientnetb2.h5
+model_archives
+data.py
 model.py
 mertics.py
+
 tools.yml
-logs/
-model_archives
-files/
-data.py
 *.keras
 *.h5
-    
 # git push --set-upstream origin master
