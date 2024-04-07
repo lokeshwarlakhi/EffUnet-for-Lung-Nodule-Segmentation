@@ -3,10 +3,10 @@ logs/
 files/
 /new_data
 model_archives
+archived_weights/
 data.py
 model.py
 mertics.py
-
 tools.yml
 *.keras
 *.h5
