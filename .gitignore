@@ -1,6 +1,7 @@
 logs/
 /data
 files/
+plots_observed/
 /new_data
 model_archives
 archived_weights/
