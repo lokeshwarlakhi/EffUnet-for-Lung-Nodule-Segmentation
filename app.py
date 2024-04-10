@@ -19,7 +19,6 @@ from keras.callbacks import EarlyStopping ,ReduceLROnPlateau ,ModelCheckpoint
 
 st.title("Efficient UNet Model in Action")
 
-# def load_eff_unet_model():
 sm.set_framework('tf.keras')
 sm.framework()
 BACKBONE = 'efficientnetb2'
@@ -30,9 +29,7 @@ model.compile(optimizer='adam', loss=sm.losses.DiceLoss(), metrics=[tf.keras.met
                                     tf.keras.metrics.AUC(),
                                     sm.metrics.iou_score,
                                     sm.metrics.FScore(threshold=0.5)])
-# return model
 
-# model = load_eff_unet_model()
 model.load_weights('/home/lokeswarlakhineni/codespace/lung Nodule segmentation using Res Unet/archived_weights/model_1.weights.h5')
 
 
@@ -41,7 +38,6 @@ model.load_weights('/home/lokeswarlakhineni/codespace/lung Nodule segmentation u
 def predict(image):
     img = cv2.resize(image,(256, 256)) 
     img = np.array(img)
-    # img = np.stack((img,) * 3, axis=-1)
     img = img/img.max()
     img = img.astype(np.float32)
     img = img.reshape(1,img.shape[0],img.shape[1],img.shape[2])
@@ -55,12 +51,7 @@ if uploaded_file is not None:
     nparr = np.frombuffer(file_bytes, np.uint8)
     image = cv2.imdecode(nparr, cv2.IMREAD_COLOR)
     col1, col2 = st.columns(2)
-    # with col1:
     st.image(image, caption='Image', use_column_width=True)
-        # st.image(input_image, caption='Input Image', use_column_width=True)
     if st.button('Start Prediction'):
         prediction = predict(image)
-        # prediction=(prediction > 0.5).astype(np.uint8)
-        # with col1:
-        # st.image(image, caption='Image', use_column_width=True)
         st.image(prediction, caption='Image', use_column_width=True)
